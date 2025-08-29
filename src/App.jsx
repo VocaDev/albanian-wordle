@@ -5,9 +5,11 @@ function App() {
   const [words, setWords] = useState([]);
   const [targetWord, setTargetWord] = useState("");
   const [currentGuess, setCurrentGuess] = useState("");
-  const[guesses, setGuesses] = useState([]);
+  const [guesses, setGuesses] = useState([]);
   const [colors, setColors] = useState([]);
+  const [status, setStatus] = useState("playing");
 
+  const maxAttempts = 6;
   const maxGuesses = 6;
   const wordLength = targetWord.length || 5;
 
@@ -27,6 +29,8 @@ function App() {
   }, [])
 
   const handleKey = (key) => {
+    if(status !== "playing") return;
+
     if(key === "Enter") {
       if (currentGuess.length === targetWord.length && words.includes(currentGuess)) {
 
@@ -36,9 +40,20 @@ function App() {
           else return "gray";
         }); 
 
-        setGuesses([...guesses, currentGuess]);
-        setColors([...colors, colorRow]);
+        const newGuesses = [...guesses, currentGuess];
+        const newColors = [...colors, colorRow];
+
+        setGuesses(newGuesses);
+        setColors(newColors);
         setCurrentGuess("");
+
+        if(currentGuess === targetWord) {
+          setStatus("won");
+        }
+        else if(newGuesses.length >= maxAttempts) {
+          setStatus("lost");
+        }
+
       }
     }
     else if (key === "Backspace") {
@@ -52,12 +67,26 @@ function App() {
     const listener = (e) => handleKey(e.key);
     window.addEventListener("keydown" ,listener);
     return () => window.removeEventListener("keydown", listener);
-  })
+  });
+
+  const restartGame = () => {
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    setTargetWord(randomWord);
+    setGuesses([]);
+    setColors([]);
+    setCurrentGuess("");
+    setStatus("playing");
+  }
 
   return (
     <div className="App">
       <h1>Albanian Wordle Copy</h1>
-      <p>Target word: {targetWord}</p>
+      {status === "won" && (<h2>🎉 You win!
+        <button onClick={restartGame}>Restart</button></h2>
+        )}
+      {status === "lost" && (<h2>❌ You lose! The word was: {targetWord}{" "}
+        <button onClick={restartGame}>Restart</button></h2>)}
+
 
       <div className="grid">
         {[...Array(maxGuesses)].map((_, i) => {
