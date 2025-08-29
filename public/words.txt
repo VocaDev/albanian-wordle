@@ -194,12 +194,12 @@ monedh
 shteti
 kombe
 shqip
-kosov
+kosova
 tirana
-prisht
-mitrov
+prishtina
+mitrovica
 vlore
 durres
 shkoder
-gjakov
+gjakova
 peja
